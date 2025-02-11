@@ -3,6 +3,10 @@ const compression = require('compression');
 const axios = require('axios');
 const zlib = require('zlib');
 
+/**
+ * Fetches test data from a list of URLs
+ * @returns {Promise<string>} The fetched test data
+ */
 const fetchTestData = async () => {
   try {
     // Fetch complete works of Shakespeare (about 5.5MB)
@@ -30,12 +34,16 @@ const fetchTestData = async () => {
   } catch (error) {
     console.error('Error fetching test data:', error.message);
     // Fallback to larger generated data (5MB)
-    return generateTestData(5 * 1024 * 1024);
+    return generateCompressedTestData(5 * 1024 * 1024);
   }
 };
 
-// Fallback test data generator with more realistic content
-const generateTestData = (size = 5 * 1024 * 1024) => {
+/**
+ * Generates compressed test data of a given size. Fallback test data generator with more realistic content
+ * @param {number} size - The size of the test data in bytes (default: 5MB)
+ * @returns {string} Compressed test data
+ */
+const generateCompressedTestData = (size = 5 * 1024 * 1024) => {
   // Create more compressible content by including patterns and repetition
   const words = [
     "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
@@ -61,6 +69,12 @@ const formatBytes = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
+/**
+ * Tests compression performance for a specific algorithm
+ * @param {string} algorithm - The compression algorithm to test ('gzip', 'deflate', or 'br')
+ * @param {string} testData - The data to compress
+ * @returns {Promise<Object>} Result object containing compression metrics (algorithm, sizes, ratio, time)
+ */
 const testCompression = async (algorithm, testData) => {
   return new Promise((resolve, reject) => {
     const app = express();
@@ -99,6 +113,7 @@ const testCompression = async (algorithm, testData) => {
         console.log(`\nTesting ${algorithm} compression:`);
         console.log('Original content size:', formatBytes(testData.length));
 
+        // Disable decompression
         const response = await axios.get(`http://localhost:${port}/test`, {
           headers,
           responseType: 'arraybuffer',
@@ -128,6 +143,12 @@ const testCompression = async (algorithm, testData) => {
   });
 };
 
+/**
+ * Tests compression performance for a specific algorithm
+ * @param {string} algorithm - The compression algorithm to test ('gzip', 'deflate', or 'br')
+ * @param {string} testData - The data to compress
+ * @returns {Promise<Object>} Result object containing compression metrics (algorithm, sizes, ratio, time)
+ */
 const compareCompressions = async () => {
   console.log('Fetching large test data...');
   const testData = await fetchTestData();

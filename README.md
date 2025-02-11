@@ -147,3 +147,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Support
 
 If you have any questions or need help with the code, please open an issue in the GitHub repository.
+
+## Article
+
+[How to test HTTP compression performance](https://www.ayrshare.com/http-compression-in-node-js-a-dive-into-gzip-deflate-and-brotli/)
